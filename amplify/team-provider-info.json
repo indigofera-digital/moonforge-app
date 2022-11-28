@@ -1,0 +1,23 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-moonforgeapp-dev-200843-authRole",
+      "UnauthRoleArn": "arn:aws:iam::369528434114:role/amplify-moonforgeapp-dev-200843-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::369528434114:role/amplify-moonforgeapp-dev-200843-authRole",
+      "Region": "eu-west-1",
+      "DeploymentBucketName": "amplify-moonforgeapp-dev-200843-deployment",
+      "UnauthRoleName": "amplify-moonforgeapp-dev-200843-unauthRole",
+      "StackName": "amplify-moonforgeapp-dev-200843",
+      "StackId": "arn:aws:cloudformation:eu-west-1:369528434114:stack/amplify-moonforgeapp-dev-200843/c51239b0-6e6d-11ed-adb9-0240e954ed15",
+      "AmplifyAppId": "d2j26r93h3sne0"
+    },
+    "categories": {
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d2j26r93h3sne0",
+          "type": "manual"
+        }
+      }
+    }
+  }
+}

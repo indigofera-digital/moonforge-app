@@ -1,18 +1,22 @@
-import { ethers } from 'ethers';
+// import { ethers } from 'ethers';
 import { Link, ImmutableXClient, ImmutableMethodResults, ETHTokenType, ERC721TokenType, MintableERC721TokenType, ImmutableAssetStatus } from '@imtbl/imx-sdk';
 import { useEffect, useState } from 'react';
+import { ImmutableX, Config, BalancesApiGetBalanceRequest, AssetsApiListAssetsRequest, ListAssetsResponse } from '@imtbl/core-sdk';
+
 require('dotenv').config();
 
 declare let window: any;
 
 interface InventoryProps {
-  client: ImmutableXClient,
+  // client: ImmutableXClient,
+  client: ImmutableX,
   link: Link,
   wallet: string
 }
 
 const Inventory = ({client, link, wallet}: InventoryProps) => {
-  const [inventory, setInventory] = useState<ImmutableMethodResults.ImmutableGetAssetsResult>(Object);
+  // const [inventory, setInventory] = useState<ImmutableMethodResults.ImmutableGetAssetsResult>(Object);
+  const [inventory, setInventory] = useState<ListAssetsResponse>(Object);
   // minting
   const [mintTokenId, setMintTokenId] = useState('');
   const [mintBlueprint, setMintBlueprint] = useState('');
@@ -29,9 +33,28 @@ const Inventory = ({client, link, wallet}: InventoryProps) => {
     load()
   }, [])
 
+  // async function load(): Promise<void> {
+  //   setInventory(await client.getAssets({ user: wallet, status: ImmutableAssetStatus.imx, order_by: "updated_at" }))
+  //   console.log(inventory.result);
+  // };
+
   async function load(): Promise<void> {
-    setInventory(await client.getAssets({user: wallet, status: ImmutableAssetStatus.imx,  collection: '0x189dDFD68D0C1118A8d5eEA4F72f75490F2e8A77'}))
+    if (wallet) {
+      const assets = await getAssets();
+      setInventory(assets);
+      console.log(assets)
+    }
   };
+
+  async function getAssets() {
+    // return await client.getAssets({ user: wallet, status: ImmutableAssetStatus.imx });
+    return await client.listAssets({
+      user: wallet,
+      status: 'imx',
+      orderBy: 'updated_at',
+      pageSize: 100,
+    });
+  }
 
   // sell an asset
   // async function sellNFT() {
@@ -72,7 +95,8 @@ const Inventory = ({client, link, wallet}: InventoryProps) => {
     const response = await fetch(`${process.env.REACT_APP_MOONFORGE_BACKEND_API}/collections/openPack`, requestOptions);
     const data = await response.json();
 
-    setInventory(await client.getAssets({user: wallet, status: ImmutableAssetStatus.imx}))
+    // setInventory(await client.getAssets({user: wallet, status: ImmutableAssetStatus.imx}))
+    setInventory(await getAssets());
   };
   
   async function buyPack() {
@@ -99,7 +123,8 @@ const Inventory = ({client, link, wallet}: InventoryProps) => {
     const response = await fetch(`${process.env.REACT_APP_MOONFORGE_BACKEND_API}/collections/openPack`, requestOptions);
     const data = await response.json();
     
-    setInventory(await client.getAssets({user: wallet, status: ImmutableAssetStatus.imx}))
+    // setInventory(await client.getAssets({user: wallet, status: ImmutableAssetStatus.imx}))
+    setInventory(await getAssets())
   };
 
   async function forge() {
@@ -126,12 +151,13 @@ const Inventory = ({client, link, wallet}: InventoryProps) => {
     };
     const response = await fetch(`${process.env.REACT_APP_MOONFORGE_BACKEND_API}/collections/forge`, requestOptions);
     const data = await response.json();
-    setInventory(await client.getAssets({user: wallet, sell_orders: true}))
+    // setInventory(await client.getAssets({user: wallet, sell_orders: true}))
+    setInventory(await getAssets())
   };
 
   return (
     <div>
-      <div>
+      {/* <div>
         <label>
           Collection Address:
           <input type="text" value={collectionAddress} onChange={e => setCollectionAddress(e.target.value)} />
@@ -150,11 +176,28 @@ const Inventory = ({client, link, wallet}: InventoryProps) => {
           <input type="text" value={forgeTokens} onChange={e => setForgeTokens(e.target.value)} />
         </label>
         <button onClick={forge}>Forge</button>
-      </div>
-      <br/><br/><br/>
+      </div> */}
+      <br/><br/>
       <div>
         Inventory:
-        {JSON.stringify(inventory.result)}
+        {/* {JSON.stringify(inventory.result)} */}
+        <table>
+        <tbody>
+
+          {(inventory.result || []).map(col => (
+            <tr>
+              <td><img src={col.image_url || ""} alt="" width="200px" height="200px" /></td>
+              <th>TokenId: {col.token_id}
+                <br />Collection: {col.token_address}
+                {/* <br />Name: {col.metadata["name"]}
+                <br />Description: {col.metadata["description"]} */}
+              </th>
+            </tr>
+            )) 
+          }
+        
+        </tbody>
+        </table>
       </div>
     </div>
   );
